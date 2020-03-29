@@ -3,19 +3,35 @@ const elements = {};
 let canvas, ctx, W, H,
     controls;
 
-function addControl(name, x, y) {
-    controls.innerHTML += `<div id=""><label><input type="checkbox" id="c_${name}"> ${name}</label></div>`;
+function addControl(name, x, y, deletable = false) {
+    let control = document.createElement("div");
+    control.id = name;
+    control.classList.add("control");
+    control.innerHTML = `<label><input type="checkbox"> ${name}</label>`
+        + '<span class="addcontrols">'
+        + `<label>Position <input name="x" type="number" min="-200" max="200" value="0"><input name="y" type="number" min="-200" max="200" value="0"></label>`
+        + '<label>Scale <input name="scale" type="number" min="0.1" max="5" value="1" step="0.1"></label>'
+        + '<label>Rotation <input name="rotation" type="number" min="-360" max="360" value="0" step="5"></label>'
+        + '<button class="add">+</button>'
+        + (deletable ? '<button class="delete">-</button>' : "")
+        + '</span>';
 
-    let elt = elements[name] = {x, y};
+    controls.appendChild(control);
+
+    let elt = elements[name] = {basex: x, basey: y, x: 0, y: 0, scale: 1, rotation: 0};
     let img = elt.img = new Image();
     img.src = "img/" + name + ".png";
-    img.onload = () => {
-        elt.show = true;
+    elt.show = true;
 
-        let checkbox = document.getElementById("c_" + name);
-        checkbox.checked = true;
-        checkbox.addEventListener("click", () => elt.show = !elt.show);
-    };
+    let checkbox = document.querySelector(`#${name} > label > input`);
+    checkbox.checked = true;
+    checkbox.addEventListener("click", () => {
+        elt.show = checkbox.checked;
+    });
+
+    document.querySelectorAll(`#${name} .addcontrols input`).forEach(param => {
+        param.addEventListener("change", () => elt[param.name] = parseFloat(param.value));
+    });
 }
 
 window.addEventListener("load", () => {
@@ -45,7 +61,17 @@ function draw() {
     ctx.fillRect(0, 0, W, H);
 
     for (let [name, elt] of Object.entries(elements).reverse()) {
-        if (elt.show)
-            ctx.drawImage(elt.img, elt.x, elt.y);
+        if (elt.show) {
+            let w = elt.img.width,
+                h = elt.img.height;
+
+            ctx.save();
+            ctx.translate(elt.basex + elt.x + w/2, elt.basey + elt.y + h/2);
+            ctx.rotate(elt.rotation * 0.01745);
+            let s = (elt.scale - 1) / 2 + 1;
+            ctx.scale(s, s);
+            ctx.drawImage(elt.img, -w/2, -h/2);
+            ctx.restore();
+        }
     }
 }
