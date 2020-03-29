@@ -96,6 +96,26 @@ window.addEventListener("load", () => {
         ["hair", 0, 0]
     ].forEach(p => addControl(...p));
 
+    document.getElementById("random").addEventListener("click", () => {
+        for (let name in elements) {
+            let elt = elements[name];
+            elt.x = Math.floor(Math.random() * 100 - 50);
+            elt.y = Math.floor(Math.random() * 100 - 50);
+            elt.scalex = Math.floor(Math.random() * 20 + 5) / 10;
+            elt.scaley = Math.floor(Math.random() * 20 + 5) / 10;
+            elt.rotation = Math.floor(Math.random() * 360);
+            elt.show = !Math.round(Math.random() * 0.7);
+        }
+
+        document.querySelectorAll(`.control`).forEach(elem => {
+            let elt = elements[elem.id];
+            elem.querySelectorAll(`.addcontrols input`).forEach(param => {
+                param.value = elt[param.name];
+            });
+            elem.querySelector("input[type=checkbox]").checked = elt.show;
+        });
+    })
+
     setInterval(draw, 50);
 });
 
