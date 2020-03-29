@@ -1,4 +1,10 @@
 const elements = {}, count = {};
+const randomParams = {
+    hide: 0.25,
+    move: 50,
+    scale: 2,
+    rotate: 50
+};
 
 let canvas, ctx, W, H,
     controls;
@@ -96,15 +102,21 @@ window.addEventListener("load", () => {
         ["hair", 0, 0]
     ].forEach(p => addControl(...p));
 
+    document.querySelectorAll("#rand_controls input").forEach(param => {
+        param.addEventListener("change", () => {
+            randomParams[param.name] = param.value;
+        });
+    });
+
     document.getElementById("random").addEventListener("click", () => {
         for (let name in elements) {
             let elt = elements[name];
-            elt.x = Math.floor(Math.random() * 100 - 50);
-            elt.y = Math.floor(Math.random() * 100 - 50);
-            elt.scalex = Math.floor(Math.random() * 20 + 5) / 10;
-            elt.scaley = Math.floor(Math.random() * 20 + 5) / 10;
-            elt.rotation = Math.floor(Math.random() * 360);
-            elt.show = !Math.round(Math.random() * 0.7);
+            elt.x = Math.floor(Math.random() * 2 * randomParams.move - randomParams.move);
+            elt.y = Math.floor(Math.random() * 2 * randomParams.move - randomParams.move);
+            elt.scalex = Math.floor((1 + Math.random() * (Math.random() > 0.5 ? -1 / (6 - randomParams.scale) : randomParams.scale)) * 10) / 10;
+            elt.scaley =  Math.floor((1 + Math.random() * (Math.random() > 0.5 ? -1 / (6 - randomParams.scale) : randomParams.scale)) * 10) / 10;
+            elt.rotation = Math.floor(Math.random() * randomParams.rotate * 2 - randomParams.rotate);
+            elt.show = Math.random() > randomParams.hide;
         }
 
         document.querySelectorAll(`.control`).forEach(elem => {
@@ -114,7 +126,7 @@ window.addEventListener("load", () => {
             });
             elem.querySelector("input[type=checkbox]").checked = elt.show;
         });
-    })
+    });
 
     setInterval(draw, 50);
 });
