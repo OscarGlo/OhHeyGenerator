@@ -75,3 +75,13 @@ function draw() {
         }
     }
 }
+
+function randomize() {
+    for (let [key, value] of Object.entries(elements)) {
+        const randomBool = Math.random() <= 0.5;
+        const checkboxDom = document.querySelector(`#${key} input`);
+
+        value.show = randomBool;
+        checkboxDom.checked = randomBool;
+    }
+}
