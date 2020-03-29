@@ -45,9 +45,9 @@ function addControl(name, x, y, deletable = false) {
     });
 
     // Add button
-    document.querySelector(`#${name} .add`).addEventListener("click", () => {
+    /*document.querySelector(`#${name} .add`).addEventListener("click", () => {
         addControl(name, x, y, true);
-    });
+    });*/
 }
 
 window.addEventListener("load", () => {
